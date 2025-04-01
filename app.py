@@ -27,3 +27,11 @@ app.register_blueprint(transaction_bp, url_prefix='/api')
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+@app.route("/db-check")
+def db_check():
+    try:
+        result = db.session.execute("SELECT 1").scalar()
+        return {"status": "success", "result": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}, 500
