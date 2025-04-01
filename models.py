@@ -50,7 +50,7 @@ class Transaction(db.Model):
     head_id = db.Column(db.Integer, db.ForeignKey('head.id'), nullable=True)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
     subcategory_id = db.Column(db.Integer, db.ForeignKey('subcategory.id'), nullable=True)
-    title = db.Column(db.String(100), nullable=True)
+    title = db.Column(db.Text, nullable=True)
 
     # For income:
     source = db.Column(db.String(100), nullable=True)
