@@ -26,6 +26,10 @@ app.extensions['bcrypt'] = bcrypt  # <-- Important!
 app.register_blueprint(auth_routes, url_prefix='/auth')
 app.register_blueprint(transaction_bp, url_prefix='/api')
 
+with app.app_context():
+    from flask_migrate import upgrade
+    upgrade()
+
 if __name__ == "__main__":
     app.run(debug=True)
 
