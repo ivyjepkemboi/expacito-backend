@@ -14,6 +14,7 @@ app.config.from_object(Config)
 
 # Initialize Flask Extensions
 db.init_app(app)
+from models import *
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)  # Initialize bcrypt explicitly
 migrate = Migrate(app, db)
