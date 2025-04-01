@@ -7,6 +7,7 @@ from config import Config
 from db import db
 from routes.auth_routes import auth_routes
 from routes.transaction_routes import transaction_bp  # renamed for consistency
+from sqlalchemy import text
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -31,7 +32,7 @@ if __name__ == "__main__":
 @app.route("/db-check")
 def db_check():
     try:
-        result = db.session.execute("SELECT 1").scalar()
+        result = db.session.execute(text("SELECT 1")).scalar()
         return {"status": "success", "result": result}
     except Exception as e:
         return {"status": "error", "message": str(e)}, 500
