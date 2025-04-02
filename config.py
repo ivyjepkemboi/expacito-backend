@@ -24,7 +24,7 @@ class Config:
     else:
         SQLALCHEMY_DATABASE_URI = os.getenv(
             "DATABASE_URL",
-            "mysql+pymysql://root:yourpassword@localhost/incomexpense"
+            "mysql+pymysql://root:Xandie0723510665#@localhost/incomexpense"
         )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
