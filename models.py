@@ -22,7 +22,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # added
     head_id = db.Column(db.Integer, db.ForeignKey('head.id'), nullable=False)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     subcategories = db.relationship('Subcategory', backref='category', cascade="all, delete-orphan", lazy=True)

@@ -1,0 +1,18 @@
+[33mdc9e7cf[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m comment
+[33m01fcc87[m achawee
+[33m5ad26e8[m so many
+[33m27c4717[m config
+[33maca6101[m added upgrade
+[33m71f36a6[m added upgrade
+[33m1a92fd9[m added upgrade
+[33m38a5e26[m edited config
+[33m30723cd[m edited config
+[33m62d3c5b[m edited config
+[33m59dd104[m moved docker
+[33m94821d0[m moved docker
+[33md26f2e1[m added docker
+[33m9f95bc7[m Initial commit of Flask backend
+[33m77d8c16[m Configured PostgreSQL for Render
+[33m14e6229[m changed requirements
+[33m0816a1e[m changed config
+[33med5dee9[m Initial commit for Render deployment
