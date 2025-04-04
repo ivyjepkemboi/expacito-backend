@@ -97,9 +97,9 @@ def create_transaction():
             return jsonify({'error': f'Missing fields: {", ".join(missing)}'}), 400
 
         # Explicitly verify ownership
-        head = Head.query.filter_by(id=data['head_uuid'], user_uuid=user_uuid).first()
-        category = Category.query.filter_by(id=data['category_uuid'], user_uuid=user_uuid).first()
-        subcategory = Subcategory.query.filter_by(id=data['subcategory_uuid'], user_uuid=user_uuid).first()
+        head = Head.query.filter_by(uuid=data['head_uuid'], user_uuid=user_uuid).first()
+        category = Category.query.filter_by(uuid=data['category_uuid'], user_uuid=user_uuid).first()
+        subcategory = Subcategory.query.filter_by(uuid=data['subcategory_uuid'], user_uuid=user_uuid).first()
 
         if not all([head, category, subcategory]):
             return jsonify({'error': 'Invalid head/category/subcategory provided'}), 400
