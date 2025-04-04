@@ -13,7 +13,7 @@ def heads():
 
     if request.method == 'GET':
         heads = Head.query.filter_by(user_uuid=user_uuid).order_by(Head.name).all()
-        return jsonify([{'uuid': h.id, 'name': h.name} for h in heads])
+        return jsonify([{'uuid': h.uuid, 'name': h.name} for h in heads])
 
     data = request.json
     name = data.get('name')
@@ -37,7 +37,7 @@ def categories(head_uuid):
 
     if request.method == 'GET':
         categories = Category.query.filter_by(head_uuid=head_uuid, user_uuid=user_uuid).all()
-        return jsonify([{'id': c.id, 'name': c.name} for c in categories])
+        return jsonify([{'id': c.uuid, 'name': c.name} for c in categories])
 
     data = request.json
     name = data.get('name')
@@ -61,7 +61,7 @@ def subcategories(category_uuid):
 
     if request.method == 'GET':
         subcategories = Subcategory.query.filter_by(category_uuid=category_uuid, user_uuid=user_uuid).all()
-        return jsonify([{'id': s.id, 'name': s.name} for s in subcategories])
+        return jsonify([{'id': s.uuid, 'name': s.name} for s in subcategories])
 
     data = request.json
     name = data.get('name')
