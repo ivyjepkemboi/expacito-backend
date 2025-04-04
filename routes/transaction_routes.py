@@ -37,7 +37,7 @@ def categories(head_uuid):
 
     if request.method == 'GET':
         categories = Category.query.filter_by(head_uuid=head_uuid, user_uuid=user_uuid).all()
-        return jsonify([{'id': c.uuid, 'name': c.name} for c in categories])
+        return jsonify([{'uuid': c.uuid, 'name': c.name} for c in categories])
 
     data = request.json
     name = data.get('name')
@@ -48,20 +48,20 @@ def categories(head_uuid):
     category = Category(name=name, head_uuid=head_uuid, user_uuid=user_uuid)
     db.session.add(category)
     db.session.commit()
-    return jsonify({'message': 'Category created', 'id': category.id}), 201
+    return jsonify({'message': 'Category created', 'uuid': category.uuid}), 201
 
 # ---------- SUBCATEGORY ROUTES ----------
 @transaction_bp.route('/categories/<string:category_uuid>/subcategories', methods=['GET', 'POST'])
 @jwt_required()
 def subcategories(category_uuid):
     user_uuid = get_jwt_identity()
-    category = Category.query.filter_by(id=category_uuid, user_uuid=user_uuid).first()
+    category = Category.query.filter_by(uuid=category_uuid, user_uuid=user_uuid).first()
     if not category:
         return jsonify({'error': 'Category not found'}), 404
 
     if request.method == 'GET':
         subcategories = Subcategory.query.filter_by(category_uuid=category_uuid, user_uuid=user_uuid).all()
-        return jsonify([{'id': s.uuid, 'name': s.name} for s in subcategories])
+        return jsonify([{'uuid': s.uuid, 'name': s.name} for s in subcategories])
 
     data = request.json
     name = data.get('name')
@@ -72,7 +72,7 @@ def subcategories(category_uuid):
     subcategory = Subcategory(name=name, category_uuid=category_uuid, user_uuid=user_uuid)
     db.session.add(subcategory)
     db.session.commit()
-    return jsonify({'message': 'Subcategory created', 'id': subcategory.id}), 201
+    return jsonify({'message': 'Subcategory created', 'uuid': subcategory.uuid}), 201
 
 # ---------- TRANSACTION ROUTES ----------
 @transaction_bp.route('/transactions', methods=['POST'])
