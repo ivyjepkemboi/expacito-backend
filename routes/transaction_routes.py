@@ -122,7 +122,7 @@ def create_transaction():
     db.session.add(transaction)
     db.session.commit()
 
-    return jsonify({'message': 'Transaction created', 'id': transaction.id}), 201
+    return jsonify({'message': 'Transaction created', 'uuid': transaction.uuid}), 201
 
 @transaction_bp.route('/transactions', methods=['GET'])
 @jwt_required()
@@ -134,7 +134,7 @@ def get_transactions():
     result = []
     for txn in transactions:
         txn_data = {
-            'id': txn.id,
+            'uuid': txn.uuid,
             'type': txn.type,
             'amount': txn.amount,
             'description': txn.description,
@@ -156,11 +156,12 @@ def get_transactions():
 
     return jsonify(result), 200
 
-@transaction_bp.route('/transactions/<int:txn_id>', methods=['PUT'])
+@transaction_bp.route('/transactions/<string:txn_uuid>', methods=['PUT'])
 @jwt_required()
-def update_transaction(txn_id):
+def update_transaction(txn_uuid):
     user_uuid = get_jwt_identity()
-    transaction = Transaction.query.filter_by(id=txn_id, user_uuid=user_uuid).first()
+    transaction = Transaction.query.filter_by(uuid=txn_uuid, user_uuid=user_uuid).first()
+
 
     if not transaction:
         return jsonify({"error": "Transaction not found"}), 404
@@ -185,19 +186,19 @@ def update_transaction(txn_id):
 
         # Validate ownership and existence
         if head_uuid:
-            head = Head.query.filter_by(id=head_uuid, user_uuid=user_uuid).first()
+            head = Head.query.filter_by(uuid=head_uuid, user_uuid=user_uuid).first()
             if not head:
                 return jsonify({'error': 'Invalid head provided'}), 400
             transaction.head_uuid = head_uuid
 
         if category_uuid:
-            category = Category.query.filter_by(id=category_uuid, user_uuid=user_uuid).first()
+            category = Category.query.filter_by(uuid=category_uuid, user_uuid=user_uuid).first()
             if not category:
                 return jsonify({'error': 'Invalid category provided'}), 400
             transaction.category_uuid = category_uuid
 
         if subcategory_uuid:
-            subcategory = Subcategory.query.filter_by(id=subcategory_uuid, user_uuid=user_uuid).first()
+            subcategory = Subcategory.query.filter_by(uuid=subcategory_uuid, user_uuid=user_uuid).first()
             if not subcategory:
                 return jsonify({'error': 'Invalid subcategory provided'}), 400
             transaction.subcategory_uuid = subcategory_uuid
@@ -207,11 +208,11 @@ def update_transaction(txn_id):
     return jsonify({"message": "Transaction updated"}), 200
 
 
-@transaction_bp.route('/transactions/<int:txn_id>', methods=['DELETE'])
+@transaction_bp.route('/transactions/<string:txn_uuid>', methods=['DELETE'])
 @jwt_required()
-def delete_transaction(txn_id):
+def delete_transaction(txn_uuid):
     user_uuid = get_jwt_identity()
-    transaction = Transaction.query.filter_by(id=txn_id, user_uuid=user_uuid).first()
+    transaction = Transaction.query.filter_by(uuid=txn_uuid, user_uuid=user_uuid).first()
 
     if not transaction:
         return jsonify({"error": "Transaction not found"}), 404
