@@ -24,7 +24,7 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    return jsonify({"message": "User registered successfully"}), 201
+    return jsonify({"message": "User registered successfully", "user_uuid": user.uuid }), 201
 
 @auth_routes.route('/login', methods=['POST'])
 def login():
@@ -40,7 +40,7 @@ def login():
     bcrypt = current_app.extensions['bcrypt']
 
     if user and bcrypt.check_password_hash(user.password_hash, data['password']):
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=user.uuid)
         return jsonify(access_token=access_token), 200
 
     return jsonify({"error": "Invalid credentials"}), 401

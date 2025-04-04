@@ -7,14 +7,12 @@ def generate_uuid():
 
 class User(db.Model):
     uuid = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    id = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False)  # non-primary, just legacy/reference
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
 
 class Head(db.Model):
     uuid = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    id = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False)
     user_uuid = db.Column(db.String(36), db.ForeignKey('user.uuid'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -26,7 +24,6 @@ class Head(db.Model):
 
 class Category(db.Model):
     uuid = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    id = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False)
     user_uuid = db.Column(db.String(36), db.ForeignKey('user.uuid'), nullable=False)
     head_uuid = db.Column(db.String(36), db.ForeignKey('head.uuid'), nullable=False)
     name = db.Column(db.String(200), nullable=False)
@@ -39,7 +36,6 @@ class Category(db.Model):
 
 class Subcategory(db.Model):
     uuid = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    id = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False)
     user_uuid = db.Column(db.String(36), db.ForeignKey('user.uuid'), nullable=False)
     category_uuid = db.Column(db.String(36), db.ForeignKey('category.uuid'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
@@ -51,7 +47,6 @@ class Subcategory(db.Model):
 
 class Transaction(db.Model):
     uuid = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    id = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False)
     user_uuid = db.Column(db.String(36), db.ForeignKey('user.uuid'), nullable=False)
     type = db.Column(db.String(10), nullable=False)
 
