@@ -31,7 +31,7 @@ def heads():
 @jwt_required()
 def categories(head_uuid):
     user_uuid = get_jwt_identity()
-    head = Head.query.filter_by(uudid=head_uuid, user_uuid=user_uuid).first()
+    head = Head.query.filter_by(uuid=head_uuid, user_uuid=user_uuid).first()
     if not head:
         return jsonify({'error': 'Head not found'}), 404
 
