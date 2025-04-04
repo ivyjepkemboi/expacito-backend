@@ -1,60 +1,66 @@
 from db import db
 from datetime import datetime
+import uuid
+
+def generate_uuid():
+    return str(uuid.uuid4())
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    uuid = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    id = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False)  # non-primary, just legacy/reference
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
 
 class Head(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # added
+    uuid = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    id = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False)
+    user_uuid = db.Column(db.String(36), db.ForeignKey('user.uuid'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    user = db.relationship('User', backref=db.backref('heads', lazy=True))
     categories = db.relationship('Category', backref='head', cascade="all, delete-orphan", lazy=True)
-    user = db.relationship('User', backref=db.backref('heads', lazy=True))  # added
 
-    __table_args__ = (db.UniqueConstraint('user_id', 'name', name='unique_head_per_user'),)  # ensure uniqueness per user
+    __table_args__ = (db.UniqueConstraint('user_uuid', 'name', name='unique_head_per_user'),)
 
 class Category(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # added
-    head_id = db.Column(db.Integer, db.ForeignKey('head.id'), nullable=False)
+    uuid = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    id = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False)
+    user_uuid = db.Column(db.String(36), db.ForeignKey('user.uuid'), nullable=False)
+    head_uuid = db.Column(db.String(36), db.ForeignKey('head.uuid'), nullable=False)
     name = db.Column(db.String(200), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    user = db.relationship('User', backref=db.backref('categories', lazy=True))
     subcategories = db.relationship('Subcategory', backref='category', cascade="all, delete-orphan", lazy=True)
-    user = db.relationship('User', backref=db.backref('categories', lazy=True))  # added
 
-    __table_args__ = (db.UniqueConstraint('head_id', 'name', name='unique_category_head'),)
+    __table_args__ = (db.UniqueConstraint('head_uuid', 'name', name='unique_category_head'),)
 
 class Subcategory(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # added
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    uuid = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    id = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False)
+    user_uuid = db.Column(db.String(36), db.ForeignKey('user.uuid'), nullable=False)
+    category_uuid = db.Column(db.String(36), db.ForeignKey('category.uuid'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user = db.relationship('User', backref=db.backref('subcategories', lazy=True))  # added
+    user = db.relationship('User', backref=db.backref('subcategories', lazy=True))
 
-    __table_args__ = (db.UniqueConstraint('category_id', 'name', name='unique_subcategory_category'),)
+    __table_args__ = (db.UniqueConstraint('category_uuid', 'name', name='unique_subcategory_category'),)
 
 class Transaction(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    type = db.Column(db.String(10), nullable=False)  # 'income' or 'expense'
+    uuid = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    id = db.Column(db.Integer, unique=True, autoincrement=True, nullable=False)
+    user_uuid = db.Column(db.String(36), db.ForeignKey('user.uuid'), nullable=False)
+    type = db.Column(db.String(10), nullable=False)
 
-    # For expenses:
-    head_id = db.Column(db.Integer, db.ForeignKey('head.id'), nullable=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
-    subcategory_id = db.Column(db.Integer, db.ForeignKey('subcategory.id'), nullable=True)
+    head_uuid = db.Column(db.String(36), db.ForeignKey('head.uuid'), nullable=True)
+    category_uuid = db.Column(db.String(36), db.ForeignKey('category.uuid'), nullable=True)
+    subcategory_uuid = db.Column(db.String(36), db.ForeignKey('subcategory.uuid'), nullable=True)
     title = db.Column(db.Text, nullable=True)
 
-    # For income:
     source = db.Column(db.String(100), nullable=True)
-
     amount = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
