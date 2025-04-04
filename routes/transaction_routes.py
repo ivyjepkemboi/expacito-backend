@@ -27,7 +27,7 @@ def heads():
     return jsonify({'message': 'Head created', 'uuid': head.uuid}), 201
 
 # ---------- CATEGORY ROUTES ----------
-@transaction_bp.route('/heads/<int:head_uuid>/categories', methods=['GET', 'POST'])
+@transaction_bp.route('/heads/<string:head_uuid>/categories', methods=['GET', 'POST'])
 @jwt_required()
 def categories(head_uuid):
     user_uuid = get_jwt_identity()
@@ -51,7 +51,7 @@ def categories(head_uuid):
     return jsonify({'message': 'Category created', 'id': category.id}), 201
 
 # ---------- SUBCATEGORY ROUTES ----------
-@transaction_bp.route('/categories/<int:category_uuid>/subcategories', methods=['GET', 'POST'])
+@transaction_bp.route('/categories/<string:category_uuid>/subcategories', methods=['GET', 'POST'])
 @jwt_required()
 def subcategories(category_uuid):
     user_uuid = get_jwt_identity()
