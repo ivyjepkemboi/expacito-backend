@@ -3,6 +3,7 @@ FROM python:3.11
 
 # Set working directory
 WORKDIR /app
+RUN echo "Forcing cache invalidation at $(date)"
 
 # Copy requirements first to leverage Docker caching
 COPY requirements.txt .
