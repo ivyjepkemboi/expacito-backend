@@ -1,7 +1,11 @@
+import random
+import string
 from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import create_access_token
 from models import User
 from db import db
+import uuid
+import base64
 
 auth_routes = Blueprint('auth_routes', __name__)
 
@@ -20,11 +24,16 @@ def register():
     # Hash the password using bcrypt from app context
     hashed_password = current_app.extensions['bcrypt'].generate_password_hash(data['password']).decode('utf-8')
 
-    user = User(username=data['username'], email=data['email'], password_hash=hashed_password)
+    user = User(uuid=generate_short_uuid(),username=data['username'],  email=data['email'], password_hash=hashed_password)
     db.session.add(user)
     db.session.commit()
 
+
     return jsonify({"message": "User registered successfully", "user_uuid": user.uuid }), 201
+
+def generate_short_uuid():
+    chars = string.ascii_letters + string.digits  # a-zA-Z0-9
+    return ''.join(random.choices(chars, k=6))
 
 @auth_routes.route('/login', methods=['POST'])
 def login():
@@ -44,3 +53,5 @@ def login():
         return jsonify(access_token=access_token), 200
 
     return jsonify({"error": "Invalid credentials"}), 401
+
+
