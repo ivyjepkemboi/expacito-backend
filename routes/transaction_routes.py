@@ -78,6 +78,7 @@ def subcategories(category_uuid):
 @transaction_bp.route('/transactions', methods=['POST'])
 @jwt_required()
 def create_transaction():
+    from datetime import datetime
     user_uuid = get_jwt_identity()
     data = request.json
     type = data.get('type')
@@ -107,6 +108,19 @@ def create_transaction():
     elif type == 'income':
         if not data.get('source'):
             return jsonify({'error': 'Source required for income'}), 400
+        
+         # -----------------------
+    # ✅ Handle optional timestamp
+    timestamp_str = data.get('timestamp')
+    timestamp = None
+    if timestamp_str:
+        try:
+            timestamp = datetime.fromisoformat(timestamp_str)
+        except ValueError:
+            return jsonify({
+                'error': 'Invalid timestamp format. Use ISO 8601 format like YYYY-MM-DDTHH:MM:SS'
+            }), 400
+    # -----------------------
 
     transaction = Transaction(
         user_uuid=user_uuid,
@@ -117,7 +131,8 @@ def create_transaction():
         category_uuid=data.get('category_uuid') if type == 'expense' else None,
         subcategory_uuid=data.get('subcategory_uuid') if type == 'expense' else None,
         title=data.get('title') if type == 'expense' else None,
-        source=data.get('source') if type == 'income' else None
+        source=data.get('source') if type == 'income' else None,
+        timestamp=timestamp  # ✅ Use provided timestamp or let model default
     )
     db.session.add(transaction)
     db.session.commit()
