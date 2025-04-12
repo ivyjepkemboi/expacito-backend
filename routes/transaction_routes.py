@@ -186,7 +186,7 @@ def update_transaction(txn_uuid):
     # Update basic fields
     transaction.amount = data.get('amount', transaction.amount)
     transaction.description = data.get('description', transaction.description)
-    transaction.timestamp = data.get('timestamp', transaction.timestamp)
+    transaction.transaction_date = data.get('transaction_date', transaction.transaction_date)
 
     if transaction.type == 'income':
         transaction.source = data.get('source', transaction.source)
