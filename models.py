@@ -63,6 +63,7 @@ class Transaction(db.Model):
     source = db.Column(db.String(100), nullable=True)
     amount = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=True)
+    transaction_date = db.Column(db.Date, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', backref=db.backref('transactions', lazy=True))

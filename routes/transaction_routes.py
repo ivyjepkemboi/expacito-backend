@@ -78,9 +78,10 @@ def subcategories(category_uuid):
 @transaction_bp.route('/transactions', methods=['POST'])
 @jwt_required()
 def create_transaction():
-    from datetime import datetime
+    from datetime import datetime, date
     user_uuid = get_jwt_identity()
     data = request.json
+
     type = data.get('type')
     amount = data.get('amount')
 
@@ -97,7 +98,7 @@ def create_transaction():
         if missing:
             return jsonify({'error': f'Missing fields: {", ".join(missing)}'}), 400
 
-        # Explicitly verify ownership
+        # Verify ownership
         head = Head.query.filter_by(uuid=data['head_uuid'], user_uuid=user_uuid).first()
         category = Category.query.filter_by(uuid=data['category_uuid'], user_uuid=user_uuid).first()
         subcategory = Subcategory.query.filter_by(uuid=data['subcategory_uuid'], user_uuid=user_uuid).first()
@@ -108,20 +109,18 @@ def create_transaction():
     elif type == 'income':
         if not data.get('source'):
             return jsonify({'error': 'Source required for income'}), 400
-        
-         # -----------------------
-    # ✅ Handle optional timestamp
-    timestamp_str = data.get('timestamp')
-    timestamp = None
-    if timestamp_str:
-        try:
-            timestamp = datetime.fromisoformat(timestamp_str)
-        except ValueError:
-            return jsonify({
-                'error': 'Invalid timestamp format. Use ISO 8601 format like YYYY-MM-DDTHH:MM:SS'
-            }), 400
-    # -----------------------
 
+    # ✅ Handle transaction_date (required or defaults to today)
+    transaction_date_str = data.get('transaction_date')
+    if transaction_date_str:
+        try:
+            transaction_date = datetime.strptime(transaction_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return jsonify({'error': 'Invalid transaction_date format. Use YYYY-MM-DD'}), 400
+    else:
+        transaction_date = date.today()
+
+    # ✅ Create transaction (timestamp will be auto-filled by model)
     transaction = Transaction(
         user_uuid=user_uuid,
         type=type,
@@ -132,8 +131,9 @@ def create_transaction():
         subcategory_uuid=data.get('subcategory_uuid') if type == 'expense' else None,
         title=data.get('title') if type == 'expense' else None,
         source=data.get('source') if type == 'income' else None,
-        timestamp=timestamp  # ✅ Use provided timestamp or let model default
+        transaction_date=transaction_date  # Required manually
     )
+
     db.session.add(transaction)
     db.session.commit()
 
@@ -153,7 +153,7 @@ def get_transactions():
             'type': txn.type,
             'amount': txn.amount,
             'description': txn.description,
-            'timestamp': txn.timestamp.isoformat(),
+            'transaction_date': txn.transaction_date.isoformat(),
         }
         if txn.type == 'expense':
             txn_data.update({
